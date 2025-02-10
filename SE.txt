@@ -3838,61 +3838,87 @@ hash_table_without_replacement.display()
 Construct a tree to represent a book with chapters, sections, and subsections. Print the nodes and analyze the time and space requirements of the method.
 (Tree Construction Method)
 **/
+#include <iostream>
+#include <vector>
+#include <string>
 
+using namespace std;
 
+class Node {
+public:
+    string title;
+    string content;
+    vector<Node*> children;
 
+    Node(string t, string c = "") : title(t), content(c) {}
 
+    void addChild(Node* node) {
+        children.push_back(node);
+    }
 
+    void printNode(int level = 0) {
+        cout << string(level * 2, ' ') << title << endl;
+        if (!content.empty()) {
+            cout << string((level + 1) * 2, ' ') << content << endl;
+        }
+        for (Node* child : children) {
+            child->printNode(level + 1);
+        }
+    }
+};
 
+class Book {
+public:
+    Node* root;
 
-class Node:
-    def __init__(self, title, content=None):
-        self.title = title
-        self.content = content
-        self.children = []
+    Book(string title) {
+        root = new Node(title);
+    }
 
-    def add_child(self, node):
-        self.children.append(node)
+    Node* addChapter(string chapterTitle, string content = "") {
+        Node* chapter = new Node(chapterTitle, content);
+        root->addChild(chapter);
+        return chapter;
+    }
 
-    def print_node(self, level=0):
-        print("  " * level + self.title)
-        if self.content:
-            print("  " * (level + 1) + self.content)
-        for child in self.children:
-            child.print_node(level + 1)
+    Node* addSection(Node* parent, string sectionTitle, string content = "") {
+        Node* section = new Node(sectionTitle, content);
+        parent->addChild(section);
+        return section;
+    }
 
+    Node* addSubsection(Node* parent, string subsectionTitle, string content = "") {
+        Node* subsection = new Node(subsectionTitle, content);
+        parent->addChild(subsection);
+        return subsection;
+    }
 
-class Book:
-    def __init__(self, title):
-        self.root = Node(title)
+    void printBook() {
+        root->printNode();
+    }
 
-    def add_chapter(self, chapter_title, content=None):
-        chapter = Node(chapter_title, content)
-        self.root.add_child(chapter)
-        return chapter
+    ~Book() {
+        delete root; // Clean up memory
+    }
+};
 
-    def add_section(self, parent, section_title, content=None):
-        section = Node(section_title, content)
-        parent.add_child(section)
-        return section
+int main() {
+    Book book("Introduction to Programming");
+    Node* chapter1 = book.addChapter("Chapter 1: Introduction");
+    Node* section1_1 = book.addSection(chapter1, "Section 1.1: What is Programming?");
+    book.addSubsection(section1_1, "Subsection 1.1.1: Definition of Programming");
+    book.addSubsection(section1_1, "Subsection 1.1.2: Importance of Programming");
+    
+    Node* chapter2 = book.addChapter("Chapter 2: Data Types");
+    Node* section2_1 = book.addSection(chapter2, "Section 2.1: Primitive Data Types");
+    book.addSubsection(section2_1, "Subsection 2.1.1: Integers");
+    book.addSubsection(section2_1, "Subsection 2.1.2: Floating Point Numbers");
 
-    def add_subsection(self, parent, subsection_title, content=None):
-        subsection = Node(subsection_title, content)
-        parent.add_child(subsection)
-        return subsection
+    book.printBook();
 
-    def print_book(self):
-        self.root.print_node()
-book = Book("Introduction to Programming")
-chapter1 = book.add_chapter("Chapter 1: Introduction")
-section1_1 = book.add_section(chapter1, "Section 1.1: What is Programming?")
-subsection1_1_1 = book.add_subsection(section1_1, "Subsection 1.1.1: Definition of Programming")
-subsection1_1_2 = book.add_subsection(section1_1, "Subsection 1.1.2: Importance of Programming")
-chapter2 = book.add_chapter("Chapter 2: Data Types")
-section2_1 = book.add_section(chapter2, "Section 2.1: Primitive Data Types")
-subsection2_1_1 = book.add_subsection(section2_1, "Subsection 2.1.1: Integers")
-subsection2_1_2 = book.add_subsection(section2_1, "Subsection 2.1.2: Floating Point Numbers")
-book.print_book()
+    return 0;
+}
+
 
 /**
 
@@ -3901,264 +3927,385 @@ Create a binary search tree from an empty tree by inserting values in a given or
 
 **/
 
-class Node:
-    def __init__(self, data):
-        self.data = data
-        self.left = None
-        self.right = None
+#include <iostream>
+using namespace std;
 
-class BinarySearchTree:
-    def __init__(self):
-        self.root = None
+// Node structure for BST
+struct Node {
+    int data;
+    Node* left;
+    Node* right;
+    
+    Node(int value) {
+        data = value;
+        left = right = nullptr;
+    }
+};
 
-    def insert(self, data):
-        if self.root is None:
-            self.root = Node(data)
-        else:
-            self._insert(self.root, data)
+// Binary Search Tree class
+class BinarySearchTree {
+public:
+    Node* root;
+    
+    BinarySearchTree() {
+        root = nullptr;
+    }
 
-    def _insert(self, node, data):
-        if data < node.data:
-            if node.left is None:
-                node.left = Node(data)
-            else:
-                self._insert(node.left, data)
-        else:
-            if node.right is None:
-                node.right = Node(data)
-            else:
-                self._insert(node.right, data)
+    // Insert function
+    void insert(int data) {
+        if (root == nullptr) {
+            root = new Node(data);
+        } else {
+            insert(root, data);
+        }
+    }
 
-    def find_longest_path(self):
-        if self.root is None:
-            return 0
-        else:
-            return self._find_longest_path(self.root)
+    // Helper function for insert
+    void insert(Node* node, int data) {
+        if (data < node->data) {
+            if (node->left == nullptr) {
+                node->left = new Node(data);
+            } else {
+                insert(node->left, data);
+            }
+        } else {
+            if (node->right == nullptr) {
+                node->right = new Node(data);
+            } else {
+                insert(node->right, data);
+            }
+        }
+    }
 
-    def _find_longest_path(self, node):
-        if node is None:
-            return 0
-        else:
-            left_height = self._find_longest_path(node.left)
-            right_height = self._find_longest_path(node.right)
-            return max(left_height, right_height) + 1
+    // Find the longest path (height of the tree)
+    int findLongestPath() {
+        return findLongestPath(root);
+    }
 
-    def find_min(self):
-        if self.root is None:
-            return None
-        else:
-            return self._find_min(self.root)
+    int findLongestPath(Node* node) {
+        if (node == nullptr) {
+            return 0;
+        } else {
+            int leftHeight = findLongestPath(node->left);
+            int rightHeight = findLongestPath(node->right);
+            return max(leftHeight, rightHeight) + 1;
+        }
+    }
 
-    def _find_min(self, node):
-        if node.left is None:
-            return node.data
-        else:
-            return self._find_min(node.left)
+    // Find the minimum data value
+    int findMin() {
+        return findMin(root);
+    }
 
-    def swap_pointers(self):
-        if self.root is None:
-            return
-        else:
-            self._swap_pointers(self.root)
+    int findMin(Node* node) {
+        if (node->left == nullptr) {
+            return node->data;
+        }
+        return findMin(node->left);
+    }
 
-    def _swap_pointers(self, node):
-        if node is None:
-            return
-        else:
-            node.left, node.right = node.right, node.left
-            self._swap_pointers(node.left)
-            self._swap_pointers(node.right)
+    // Swap left and right pointers
+    void swapPointers() {
+        swapPointers(root);
+    }
 
-    def search(self, data):
-        if self.root is None:
-            return False
-        else:
-            return self._search(self.root, data)
+    void swapPointers(Node* node) {
+        if (node == nullptr) {
+            return;
+        }
+        swap(node->left, node->right);
+        swapPointers(node->left);
+        swapPointers(node->right);
+    }
 
-    def _search(self, node, data):
-        if node is None:
-            return False
-        elif node.data == data:
-            return True
-        elif data < node.data:
-            return self._search(node.left, data)
-        else:
-            return self._search(node.right, data)
+    // Search for a value in the tree
+    bool search(int data) {
+        return search(root, data);
+    }
 
-    def print_tree(self, traversal_type):
-        if traversal_type == "preorder":
-            return self.preorder(self.root, "")
-        if traversal_type == "inorder":
-            return self.inorder(self.root, "")
-        if traversal_type == "postorder":
-            return self.postorder(self.root, "")
+    bool search(Node* node, int data) {
+        if (node == nullptr) {
+            return false;
+        }
+        if (node->data == data) {
+            return true;
+        } else if (data < node->data) {
+            return search(node->left, data);
+        } else {
+            return search(node->right, data);
+        }
+    }
 
-    def preorder(self, start, traversal):
-        if start:
-            traversal += (str(start.data) + " ")
-            traversal = self.preorder(start.left, traversal)
-            traversal = self.preorder(start.right, traversal)
-        return traversal
+    // Print the tree using different traversals
+    void printTree(string traversalType) {
+        if (traversalType == "preorder") {
+            preorder(root);
+        } else if (traversalType == "inorder") {
+            inorder(root);
+        } else if (traversalType == "postorder") {
+            postorder(root);
+        }
+    }
 
-    def inorder(self, start, traversal):
-        if start:
-            traversal = self.inorder(start.left, traversal)
-            traversal += (str(start.data) + " ")
-            traversal = self.inorder(start.right, traversal)
-        return traversal
+    // Preorder traversal
+    void preorder(Node* node) {
+        if (node) {
+            cout << node->data << " ";
+            preorder(node->left);
+            preorder(node->right);
+        }
+    }
 
-    def postorder(self, start, traversal):
-        if start:
-            traversal = self.postorder(start.left, traversal)
-            traversal = self.postorder(start.right, traversal)
-            traversal += (str(start.data) + " ")
-        return traversal
+    // Inorder traversal
+    void inorder(Node* node) {
+        if (node) {
+            inorder(node->left);
+            cout << node->data << " ";
+            inorder(node->right);
+        }
+    }
 
+    // Postorder traversal
+    void postorder(Node* node) {
+        if (node) {
+            postorder(node->left);
+            postorder(node->right);
+            cout << node->data << " ";
+        }
+    }
+};
 
-# Example usage
-bst = BinarySearchTree()
-values = [8, 3, 10, 1, 6, 14, 4, 7, 13]
-for value in values:
-    bst.insert(value)
+// Example usage
+int main() {
+    BinarySearchTree bst;
+    int values[] = {8, 3, 10, 1, 6, 14, 4, 7, 13};
+    for (int value : values) {
+        bst.insert(value);
+    }
 
-print("Preorder traversal: " + bst.print_tree("preorder"))
-print("Inorder traversal: " + bst.print_tree("inorder"))
-print("Postorder traversal: " + bst.print_tree("postorder"))
+    cout << "Preorder traversal: ";
+    bst.printTree("preorder");
+    cout << endl;
 
-print("Longest path length: " + str(bst.find_longest_path()))
-print("Minimum data value: " + str(bst.find_min()))
+    cout << "Inorder traversal: ";
+    bst.printTree("inorder");
+    cout << endl;
 
-bst.swap_pointers()
-print("Preorder traversal after swapping pointers: " + bst.print_tree("preorder"))
+    cout << "Postorder traversal: ";
+    bst.printTree("postorder");
+    cout << endl;
 
-print("Searching for value 10: " + str(bst.search(10)))
-print("Searching for value 15: " + str(bst.search(15)))
+    cout << "Longest path length: " << bst.findLongestPath() << endl;
+    cout << "Minimum data value: " << bst.findMin() << endl;
+
+    bst.swapPointers();
+    cout << "Preorder traversal after swapping pointers: ";
+    bst.printTree("preorder");
+    cout << endl;
+
+    cout << "Searching for value 10: " << (bst.search(10) ? "Found" : "Not Found") << endl;
+    cout << "Searching for value 15: " << (bst.search(15) ? "Found" : "Not Found") << endl;
+
+    return 0;
+}
 
 
 /**
 Construct an expression tree from a given prefix expression and traverse it using post order traversal (non-recursive). Then, delete the entire tree.
 (Expression Tree Construction)
 **/
-class Node:
-    def __init__(self, data):
-        self.data = data
-        self.left = None
-        self.right = None
+#include <iostream>
+#include <stack>
+#include <string>
+using namespace std;
 
-class ExpressionTree:
-    def __init__(self):
-        self.root = None
+// Node structure for Expression Tree
+struct Node {
+    char data;
+    Node* left;
+    Node* right;
 
-    def construct_tree(self, prefix_expression):
-        stack = []
-        for char in reversed(prefix_expression):
-            if char in "+-*/":
-                node = Node(char)
-                node.left = stack.pop()
-                node.right = stack.pop()
-                stack.append(node)
-            else:
-                node = Node(char)
-                stack.append(node)
-        self.root = stack[0]
+    Node(char value) {
+        data = value;
+        left = right = nullptr;
+    }
+};
 
-    def post_order_traversal(self):
-        stack1 = [self.root]
-        stack2 = []
-        while stack1:
-            node = stack1.pop()
-            stack2.append(node)
-            if node.left:
-                stack1.append(node.left)
-            if node.right:
-                stack1.append(node.right)
-        while stack2:
-            node = stack2.pop()
-            print(node.data, end=" ")
-    def delete_tree(self):
-        stack = [self.root]
-        while stack:
-            node = stack.pop()
-            if node.left:
-                stack.append(node.left)
-            if node.right:
-                stack.append(node.right)
-            del node
-expression_tree = ExpressionTree()
-prefix_expression = "+A*BC"
-print("Prefix expression: " + prefix_expression)
-expression_tree.construct_tree(prefix_expression)
-print("Post-order traversal: ")
-expression_tree.post_order_traversal()
-expression_tree.delete_tree()
+// Expression Tree class
+class ExpressionTree {
+public:
+    Node* root;
+
+    ExpressionTree() {
+        root = nullptr;
+    }
+
+    // Construct tree from prefix expression
+    void constructTree(const string& prefixExpression) {
+        stack<Node*> st;
+        for (int i = prefixExpression.size() - 1; i >= 0; --i) {
+            char ch = prefixExpression[i];
+
+            if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
+                Node* node = new Node(ch);
+                node->left = st.top(); st.pop();
+                node->right = st.top(); st.pop();
+                st.push(node);
+            } else {
+                Node* node = new Node(ch);
+                st.push(node);
+            }
+        }
+        root = st.top();
+    }
+
+    // Post-order traversal
+    void postOrderTraversal() {
+        stack<Node*> stack1, stack2;
+        if (root) {
+            stack1.push(root);
+            while (!stack1.empty()) {
+                Node* node = stack1.top();
+                stack1.pop();
+                stack2.push(node);
+
+                if (node->left) stack1.push(node->left);
+                if (node->right) stack1.push(node->right);
+            }
+
+            while (!stack2.empty()) {
+                Node* node = stack2.top();
+                stack2.pop();
+                cout << node->data << " ";
+            }
+        }
+    }
+
+    // Delete tree
+    void deleteTree() {
+        deleteTree(root);
+    }
+
+private:
+    void deleteTree(Node* node) {
+        if (node == nullptr) return;
+        deleteTree(node->left);
+        deleteTree(node->right);
+        delete node;
+    }
+};
+
+int main() {
+    ExpressionTree expressionTree;
+    string prefixExpression = "+A*BC";
+    cout << "Prefix expression: " << prefixExpression << endl;
+    
+    expressionTree.constructTree(prefixExpression);
+    
+    cout << "Post-order traversal: ";
+    expressionTree.postOrderTraversal();
+    
+    expressionTree.deleteTree();
+    
+    return 0;
+}
+
 
 /**
 Represent a graph using adjacency matrix/list to perform Depth-First Search (DFS) and adjacency list to perform Breadth-First Search (BFS). Use a map of the area around a college as the graph, identifying prominent landmarks as nodes.
 (Graph Representation Algorithm)
 **/
-class Graph:
-    def __init__(self):
-        self.adjacency_list = {}
+#include <iostream>
+#include <unordered_map>
+#include <list>
+#include <queue>
+#include <set>
+using namespace std;
 
-    def add_node(self, node):
-        if node not in self.adjacency_list:
-            self.adjacency_list[node] = []
+// Graph class using adjacency list
+class Graph {
+public:
+    unordered_map<string, list<string>> adjacencyList;
 
-    def add_edge(self, node1, node2):
-        if node1 in self.adjacency_list and node2 in self.adjacency_list:
-            self.adjacency_list[node1].append(node2)
-            self.adjacency_list[node2].append(node1)
+    // Add node to the graph
+    void addNode(const string& node) {
+        adjacencyList[node] = list<string>();
+    }
 
-    def dfs(self, start_node):
-        visited = set()
-        self._dfs_helper(start_node, visited)
+    // Add edge between two nodes
+    void addEdge(const string& node1, const string& node2) {
+        adjacencyList[node1].push_back(node2);
+        adjacencyList[node2].push_back(node1);
+    }
 
-    def _dfs_helper(self, node, visited):
-        visited.add(node)
-        print(node, end=" ")
-        for neighbor in self.adjacency_list[node]:
-            if neighbor not in visited:
-                self._dfs_helper(neighbor, visited)
+    // Depth-First Search (DFS)
+    void dfs(const string& startNode) {
+        set<string> visited;
+        dfsHelper(startNode, visited);
+    }
 
-    def bfs(self, start_node):
-        visited = set()
-        queue = [start_node]
-        visited.add(start_node)
-        while queue:
-            node = queue.pop(0)
-            print(node, end=" ")
-            for neighbor in self.adjacency_list[node]:
-                if neighbor not in visited:
-                    queue.append(neighbor)
-                    visited.add(neighbor)
+    // Breadth-First Search (BFS)
+    void bfs(const string& startNode) {
+        set<string> visited;
+        queue<string> q;
+        visited.insert(startNode);
+        q.push(startNode);
 
+        while (!q.empty()) {
+            string node = q.front();
+            q.pop();
+            cout << node << " ";
 
-# Create a graph
-graph = Graph()
+            for (const string& neighbor : adjacencyList[node]) {
+                if (visited.find(neighbor) == visited.end()) {
+                    visited.insert(neighbor);
+                    q.push(neighbor);
+                }
+            }
+        }
+    }
 
-# Add nodes
-graph.add_node("A")
-graph.add_node("B")
-graph.add_node("C")
-graph.add_node("D")
-graph.add_node("E")
+private:
+    // Helper function for DFS
+    void dfsHelper(const string& node, set<string>& visited) {
+        visited.insert(node);
+        cout << node << " ";
+        for (const string& neighbor : adjacencyList[node]) {
+            if (visited.find(neighbor) == visited.end()) {
+                dfsHelper(neighbor, visited);
+            }
+        }
+    }
+};
 
-# Add edges
-graph.add_edge("A", "B")
-graph.add_edge("A", "C")
-graph.add_edge("B", "D")
-graph.add_edge("C", "E")
+int main() {
+    Graph graph;
 
-# Perform DFS traversal
-print("DFS Traversal: ")
-graph.dfs("A")
+    // Add nodes
+    graph.addNode("A");
+    graph.addNode("B");
+    graph.addNode("C");
+    graph.addNode("D");
+    graph.addNode("E");
 
-# Perform BFS traversal
-print("\nBFS Traversal: ")
-graph.bfs("A")
+    // Add edges
+    graph.addEdge("A", "B");
+    graph.addEdge("A", "C");
+    graph.addEdge("B", "D");
+    graph.addEdge("C", "E");
 
+    // Perform DFS traversal
+    cout << "DFS Traversal: ";
+    graph.dfs("A");
+    cout << endl;
 
+    // Perform BFS traversal
+    cout << "BFS Traversal: ";
+    graph.bfs("A");
+    cout << endl;
 
+    return 0;
+}
 
 
 
@@ -4167,111 +4314,152 @@ graph.bfs("A")
 Represent a graph of flight paths between cities, where the cost of an edge is the time or fuel used for the journey. Use adjacency list or matrix representation and check if the graph is connected. Justify the storage representation used.
 (Flight Path Graph)
 **/
-class Graph:
-    def __init__(self):
-        self.adjacency_list = {}
+#include <iostream>
+#include <unordered_map>
+#include <unordered_set>
+#include <string>
 
-    def add_city(self, city):
-        if city not in self.adjacency_list:
-            self.adjacency_list[city] = {}
+using namespace std;
 
-    def add_flight_path(self, city1, city2, cost):
-        if city1 in self.adjacency_list and city2 in self.adjacency_list:
-            self.adjacency_list[city1][city2] = cost
-            self.adjacency_list[city2][city1] = cost  # Assuming the graph is undirected
+class Graph {
+public:
+    void addCity(const string& city) {
+        adjacencyList[city]; // Automatically creates an empty map if city doesn't exist
+    }
 
-    def is_connected(self):
-        visited = set()
-        self._dfs_helper("New York", visited)
-        return len(visited) == len(self.adjacency_list)
+    void addFlightPath(const string& city1, const string& city2, int cost) {
+        if (adjacencyList.count(city1) && adjacencyList.count(city2)) {
+            adjacencyList[city1][city2] = cost;
+            adjacencyList[city2][city1] = cost; // Assuming the graph is undirected
+        }
+    }
 
-    def _dfs_helper(self, city, visited):
-        visited.add(city)
-        for neighbor in self.adjacency_list[city]:
-            if neighbor not in visited:
-                self._dfs_helper(neighbor, visited)
+    bool isConnected() {
+        unordered_set<string> visited;
+        dfsHelper("New York", visited);
+        return visited.size() == adjacencyList.size();
+    }
 
-    def print_graph(self):
-        for city in self.adjacency_list:
-            print(f"{city}: {self.adjacency_list[city]}")
+    void printGraph() {
+        for (const auto& pair : adjacencyList) {
+            cout << pair.first << ": ";
+            for (const auto& neighbor : pair.second) {
+                cout << neighbor.first << "(" << neighbor.second << ") ";
+            }
+            cout << endl;
+        }
+    }
 
+private:
+    unordered_map<string, unordered_map<string, int>> adjacencyList;
 
-# Create a graph of flight paths between cities
-graph = Graph()
+    void dfsHelper(const string& city, unordered_set<string>& visited) {
+        visited.insert(city);
+        for (const auto& neighbor : adjacencyList[city]) {
+            if (visited.find(neighbor.first) == visited.end()) {
+                dfsHelper(neighbor.first, visited);
+            }
+        }
+    }
+};
 
-# Add cities
-graph.add_city("New York")
-graph.add_city("Los Angeles")
-graph.add_city("Chicago")
-graph.add_city("Houston")
-graph.add_city("Seattle")
+int main() {
+    Graph graph;
 
-# Add flight paths
-graph.add_flight_path("New York", "Los Angeles", 5)
-graph.add_flight_path("New York", "Chicago", 2)
-graph.add_flight_path("Los Angeles", "Seattle", 2)
-graph.add_flight_path("Chicago", "Houston", 3)
-graph.add_flight_path("Houston", "Seattle", 4)
+    // Add cities
+    graph.addCity("New York");
+    graph.addCity("Los Angeles");
+    graph.addCity("Chicago");
+    graph.addCity("Houston");
+    graph.addCity("Seattle");
 
-# Print the graph
-print("Flight Path Graph:")
-graph.print_graph()
+    // Add flight paths
+    graph.addFlightPath("New York", "Los Angeles", 5);
+    graph.addFlightPath("New York", "Chicago", 2);
+    graph.addFlightPath("Los Angeles", "Seattle", 2);
+    graph.addFlightPath("Chicago", "Houston", 3);
+    graph.addFlightPath("Houston", "Seattle", 4);
 
-# Check if the graph is connected
-print("\nIs the graph connected?", graph.is_connected())
+    // Print the graph
+    cout << "Flight Path Graph:" << endl;
+    graph.printGraph();
 
+    // Check if the graph is connected
+    cout << "\nIs the graph connected? " << (graph.isConnected() ? "Yes" : "No") << endl;
 
+    return 0;
+}
 
 /**
 Given a sequence of sorted keys with search probabilities, build a binary search tree with the least search cost. Consider the access probability for each key.
 (Binary Search Optimization)
 **/
-class Node:
-    def __init__(self, key, probability):
-        self.key = key
-        self.probability = probability
-        self.left = None
-        self.right = None
+#include <iostream>
+#include <vector>
+#include <limits>
 
-def optimal_bst(keys, probabilities):
-    n = len(keys)
-    cost = [[0 for _ in range(n)] for _ in range(n)]
-    root = [[None for _ in range(n)] for _ in range(n)]
+using namespace std;
 
-    for i in range(n):
-        cost[i][i] = probabilities[i]
-        root[i][i] = Node(keys[i], probabilities[i])
+class Node {
+public:
+    int key;
+    double probability;
+    Node* left;
+    Node* right;
 
-    for length in range(2, n + 1):
-        for i in range(n - length + 1):
-            j = i + length - 1
-            min_cost = float('inf')
-            for r in range(i, j + 1):
-                left_cost = 0 if r == i else cost[i][r - 1]
-                right_cost = 0 if r == j else cost[r + 1][j]
-                total_cost = sum(probabilities[i:j + 1]) + left_cost + right_cost
-                if total_cost < min_cost:
-                    min_cost = total_cost
-                    root[i][j] = Node(keys[r], sum(probabilities[i:j + 1]))
-                    root[i][j].left = root[i][r - 1] if r > i else None
-                    root[i][j].right = root[r + 1][j] if r < j else None
-            cost[i][j] = min_cost
+    Node(int k, double p) : key(k), probability(p), left(nullptr), right(nullptr) {}
+};
 
-    return root[0][n - 1]
+Node* optimal_bst(const vector<int>& keys, const vector<double>& probabilities) {
+    int n = keys.size();
+    vector<vector<double>> cost(n, vector<double>(n, 0));
+    vector<vector<Node*>> root(n, vector<Node*>(n, nullptr));
 
-def print_bst(node, level=0):
-    if node is not None:
-        print_bst(node.right, level + 1)
-        print(' ' * 4 * level + '->', node.key, node.probability)
-        print_bst(node.left, level + 1)
+    // Initialize cost and root for single keys
+    for (int i = 0; i < n; ++i) {
+        cost[i][i] = probabilities[i];
+        root[i][i] = new Node(keys[i], probabilities[i]);
+    }
+    for (int length = 2; length <= n; ++length) {
+        for (int i = 0; i <= n - length; ++i) {
+            int j = i + length - 1;
+            double min_cost = numeric_limits<double>::infinity();
+            for (int r = i; r <= j; ++r) {
+                double left_cost = (r == i) ? 0 : cost[i][r - 1];
+                double right_cost = (r == j) ? 0 : cost[r + 1][j];
+                double total_cost = left_cost + right_cost + accumulate(probabilities.begin() + i, probabilities.begin() + j + 1, 0.0);
+                
+                if (total_cost < min_cost) {
+                    min_cost = total_cost;
+                    root[i][j] = new Node(keys[r], accumulate(probabilities.begin() + i, probabilities.begin() + j + 1, 0.0));
+                    root[i][j]->left = (r > i) ? root[i][r - 1] : nullptr;
+                    root[i][j]->right = (r < j) ? root[r + 1][j] : nullptr;
+                }
+            }
+            cost[i][j] = min_cost;
+        }
+    }
 
+    return root[0][n - 1];
+}
 
-# Example usage
-keys = [10, 20, 30, 40, 50]
-probabilities = [0.1, 0.2, 0.3, 0.2, 0.2]
-root = optimal_bst(keys, probabilities)
-print_bst(root)
+void print_bst(Node* node, int level = 0) {
+    if (node != nullptr) {
+        print_bst(node->right, level + 1);
+        cout << string(4 * level, ' ') << "-> " << node->key << " (" << node->probability << ")" << endl;
+        print_bst(node->left, level + 1);
+    }
+}
 
+int main() {
+    vector<int> keys = {10, 20, 30, 40, 50};
+    vector<double> probabilities = {0.1, 0.2, 0.3, 0.2, 0.2};
+
+    Node* root = optimal_bst(keys, probabilities);
+    print_bst(root);
+
+    return 0;
+}
 
 /**
 Create a dictionary that stores keywords and their meanings. Provide facilities for adding, deleting, and updating entries, as well as displaying the data in sorted order. Use a height-balanced tree and analyze the complexity of finding a keyword.
@@ -4580,9 +4768,6 @@ int main() {
 Maintain a student information system using a sequential file, allowing users to add, delete, and display information. Handle cases where a student's record does not exist.
 (Student Information System)
 **/
-
-
-
 
 #include <iostream>
 #include <fstream>
