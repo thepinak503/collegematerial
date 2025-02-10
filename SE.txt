@@ -3685,3 +3685,1259 @@ int main() {
     return 0;
 }
 
+// SPPU DSAL PROGRAMS
+/** Consider a telephone book database with N clients. Implement a hash table to quickly look up a client's telephone number, using two ollision handling techniques and compare them based on the number of comparisons required to find a set of telephone numbers. (Telephone Book Database) **/
+
+class HashTable:
+    def __init__(self, size):
+        self.size = size
+        self.table = [[] for _ in range(size)]
+
+    def hash_function(self, key):
+        return hash(key) % self.size
+
+    def insert_chaining(self, key, value):
+        index = self.hash_function(key)
+        for pair in self.table[index]:
+            if pair[0] == key:
+                pair[1] = value
+                return
+        self.table[index].append([key, value])
+
+    def lookup_chaining(self, key):
+        index = self.hash_function(key)
+        for pair in self.table[index]:
+            if pair[0] == key:
+                return pair[1]
+        return None
+
+    def insert_open_addressing(self, key, value):
+        index = self.hash_function(key)
+        while True:
+            if not self.table[index]:
+                self.table[index] = [key, value]
+                return
+            if self.table[index][0] == key:
+                self.table[index][1] = value
+                return
+            index = (index + 1) % self.size
+
+    def lookup_open_addressing(self, key):
+        index = self.hash_function(key)
+        while True:
+            if not self.table[index]:
+                return None
+            if self.table[index][0] == key:
+                return self.table[index][1]
+            index = (index + 1) % self.size
+hash_table = HashTable(10)
+hash_table.insert_chaining("John", "1234567890")
+hash_table.insert_chaining("Alice", "9876543210")
+print(hash_table.lookup_chaining("John"))  # Output: 1234567890
+print(hash_table.lookup_chaining("Alice"))  # Output: 9876543210
+hash_table.insert_open_addressing("Bob", "5555555555")
+hash_table.insert_open_addressing("Charlie", "6666666666")
+print(hash_table.lookup_open_addressing("Bob"))  # Output: 5555555555
+print(hash_table.lookup_open_addressing("Charlie"))  # Output: 6666666666
+
+
+/**
+Implement a dictionary using hashing, handling collisions with chaining (with and without replacement). The dictionary should have standard operations like Insert, Find, and Delete, where keys are unique and comparable.
+(Hash Table Implementation)
+**/
+class Node:
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+        self.next = None
+
+class HashTable:
+    def __init__(self, size, replace=False):
+        self.size = size
+        self.table = [None] * size
+        self.replace = replace
+
+    def hash_function(self, key):
+        return hash(key) % self.size
+
+    def insert(self, key, value):
+        index = self.hash_function(key)
+        if self.table[index] is None:
+            self.table[index] = Node(key, value)
+        else:
+            node = self.table[index]
+            while node.next is not None:
+                if node.key == key:
+                    if self.replace:
+                        node.value = value
+                    return
+                node = node.next
+            if node.key == key:
+                if self.replace:
+                    node.value = value
+            else:
+                node.next = Node(key, value)
+
+    def find(self, key):
+        index = self.hash_function(key)
+        node = self.table[index]
+        while node is not None:
+            if node.key == key:
+                return node.value
+            node = node.next
+        return None
+
+    def delete(self, key):
+        index = self.hash_function(key)
+        node = self.table[index]
+        prev = None
+        while node is not None:
+            if node.key == key:
+                if prev is None:
+                    self.table[index] = node.next
+                else:
+                    prev.next = node.next
+                return
+            prev = node
+            node = node.next
+
+    def display(self):
+        for index, node in enumerate(self.table):
+            print(f"Index {index}: ", end="")
+            while node is not None:
+                print(f"({node.key}, {node.value}) -> ", end="")
+                node = node.next
+            print("None")
+hash_table = HashTable(10, replace=True)
+hash_table.insert("apple", 5)
+hash_table.insert("banana", 7)
+hash_table.insert("orange", 3)
+hash_table.insert("apple", 10)  # Replace the value of "apple"
+hash_table.display()
+print(hash_table.find("apple"))  # Output: 10
+hash_table.delete("banana")
+hash_table.display()
+hash_table_without_replacement = HashTable(10, replace=False)
+hash_table_without_replacement.insert("apple", 5)
+hash_table_without_replacement.insert("banana", 7)
+hash_table_without_replacement.insert("orange", 3)
+hash_table_without_replacement.insert("apple", 10)  # Do not replace the value of "apple"
+hash_table_without_replacement.display()
+print(hash_table_without_replacement.find("apple"))  # Output: 5
+hash_table_without_replacement.delete("banana")
+hash_table_without_replacement.display()
+
+
+
+
+
+
+
+
+/**
+Construct a tree to represent a book with chapters, sections, and subsections. Print the nodes and analyze the time and space requirements of the method.
+(Tree Construction Method)
+**/
+
+
+
+
+
+
+
+class Node:
+    def __init__(self, title, content=None):
+        self.title = title
+        self.content = content
+        self.children = []
+
+    def add_child(self, node):
+        self.children.append(node)
+
+    def print_node(self, level=0):
+        print("  " * level + self.title)
+        if self.content:
+            print("  " * (level + 1) + self.content)
+        for child in self.children:
+            child.print_node(level + 1)
+
+
+class Book:
+    def __init__(self, title):
+        self.root = Node(title)
+
+    def add_chapter(self, chapter_title, content=None):
+        chapter = Node(chapter_title, content)
+        self.root.add_child(chapter)
+        return chapter
+
+    def add_section(self, parent, section_title, content=None):
+        section = Node(section_title, content)
+        parent.add_child(section)
+        return section
+
+    def add_subsection(self, parent, subsection_title, content=None):
+        subsection = Node(subsection_title, content)
+        parent.add_child(subsection)
+        return subsection
+
+    def print_book(self):
+        self.root.print_node()
+book = Book("Introduction to Programming")
+chapter1 = book.add_chapter("Chapter 1: Introduction")
+section1_1 = book.add_section(chapter1, "Section 1.1: What is Programming?")
+subsection1_1_1 = book.add_subsection(section1_1, "Subsection 1.1.1: Definition of Programming")
+subsection1_1_2 = book.add_subsection(section1_1, "Subsection 1.1.2: Importance of Programming")
+chapter2 = book.add_chapter("Chapter 2: Data Types")
+section2_1 = book.add_section(chapter2, "Section 2.1: Primitive Data Types")
+subsection2_1_1 = book.add_subsection(section2_1, "Subsection 2.1.1: Integers")
+subsection2_1_2 = book.add_subsection(section2_1, "Subsection 2.1.2: Floating Point Numbers")
+book.print_book()
+
+/**
+
+Create a binary search tree from an empty tree by inserting values in a given order. Then, perform operations like inserting a new node, finding the number of nodes in the longest path, finding the minimum data value, swapping left and right pointers, and searching for a value.
+(Binary Search Tree)
+
+**/
+
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.left = None
+        self.right = None
+
+class BinarySearchTree:
+    def __init__(self):
+        self.root = None
+
+    def insert(self, data):
+        if self.root is None:
+            self.root = Node(data)
+        else:
+            self._insert(self.root, data)
+
+    def _insert(self, node, data):
+        if data < node.data:
+            if node.left is None:
+                node.left = Node(data)
+            else:
+                self._insert(node.left, data)
+        else:
+            if node.right is None:
+                node.right = Node(data)
+            else:
+                self._insert(node.right, data)
+
+    def find_longest_path(self):
+        if self.root is None:
+            return 0
+        else:
+            return self._find_longest_path(self.root)
+
+    def _find_longest_path(self, node):
+        if node is None:
+            return 0
+        else:
+            left_height = self._find_longest_path(node.left)
+            right_height = self._find_longest_path(node.right)
+            return max(left_height, right_height) + 1
+
+    def find_min(self):
+        if self.root is None:
+            return None
+        else:
+            return self._find_min(self.root)
+
+    def _find_min(self, node):
+        if node.left is None:
+            return node.data
+        else:
+            return self._find_min(node.left)
+
+    def swap_pointers(self):
+        if self.root is None:
+            return
+        else:
+            self._swap_pointers(self.root)
+
+    def _swap_pointers(self, node):
+        if node is None:
+            return
+        else:
+            node.left, node.right = node.right, node.left
+            self._swap_pointers(node.left)
+            self._swap_pointers(node.right)
+
+    def search(self, data):
+        if self.root is None:
+            return False
+        else:
+            return self._search(self.root, data)
+
+    def _search(self, node, data):
+        if node is None:
+            return False
+        elif node.data == data:
+            return True
+        elif data < node.data:
+            return self._search(node.left, data)
+        else:
+            return self._search(node.right, data)
+
+    def print_tree(self, traversal_type):
+        if traversal_type == "preorder":
+            return self.preorder(self.root, "")
+        if traversal_type == "inorder":
+            return self.inorder(self.root, "")
+        if traversal_type == "postorder":
+            return self.postorder(self.root, "")
+
+    def preorder(self, start, traversal):
+        if start:
+            traversal += (str(start.data) + " ")
+            traversal = self.preorder(start.left, traversal)
+            traversal = self.preorder(start.right, traversal)
+        return traversal
+
+    def inorder(self, start, traversal):
+        if start:
+            traversal = self.inorder(start.left, traversal)
+            traversal += (str(start.data) + " ")
+            traversal = self.inorder(start.right, traversal)
+        return traversal
+
+    def postorder(self, start, traversal):
+        if start:
+            traversal = self.postorder(start.left, traversal)
+            traversal = self.postorder(start.right, traversal)
+            traversal += (str(start.data) + " ")
+        return traversal
+
+
+# Example usage
+bst = BinarySearchTree()
+values = [8, 3, 10, 1, 6, 14, 4, 7, 13]
+for value in values:
+    bst.insert(value)
+
+print("Preorder traversal: " + bst.print_tree("preorder"))
+print("Inorder traversal: " + bst.print_tree("inorder"))
+print("Postorder traversal: " + bst.print_tree("postorder"))
+
+print("Longest path length: " + str(bst.find_longest_path()))
+print("Minimum data value: " + str(bst.find_min()))
+
+bst.swap_pointers()
+print("Preorder traversal after swapping pointers: " + bst.print_tree("preorder"))
+
+print("Searching for value 10: " + str(bst.search(10)))
+print("Searching for value 15: " + str(bst.search(15)))
+
+
+/**
+Construct an expression tree from a given prefix expression and traverse it using post order traversal (non-recursive). Then, delete the entire tree.
+(Expression Tree Construction)
+**/
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.left = None
+        self.right = None
+
+class ExpressionTree:
+    def __init__(self):
+        self.root = None
+
+    def construct_tree(self, prefix_expression):
+        stack = []
+        for char in reversed(prefix_expression):
+            if char in "+-*/":
+                node = Node(char)
+                node.left = stack.pop()
+                node.right = stack.pop()
+                stack.append(node)
+            else:
+                node = Node(char)
+                stack.append(node)
+        self.root = stack[0]
+
+    def post_order_traversal(self):
+        stack1 = [self.root]
+        stack2 = []
+        while stack1:
+            node = stack1.pop()
+            stack2.append(node)
+            if node.left:
+                stack1.append(node.left)
+            if node.right:
+                stack1.append(node.right)
+        while stack2:
+            node = stack2.pop()
+            print(node.data, end=" ")
+    def delete_tree(self):
+        stack = [self.root]
+        while stack:
+            node = stack.pop()
+            if node.left:
+                stack.append(node.left)
+            if node.right:
+                stack.append(node.right)
+            del node
+expression_tree = ExpressionTree()
+prefix_expression = "+A*BC"
+print("Prefix expression: " + prefix_expression)
+expression_tree.construct_tree(prefix_expression)
+print("Post-order traversal: ")
+expression_tree.post_order_traversal()
+expression_tree.delete_tree()
+
+/**
+Represent a graph using adjacency matrix/list to perform Depth-First Search (DFS) and adjacency list to perform Breadth-First Search (BFS). Use a map of the area around a college as the graph, identifying prominent landmarks as nodes.
+(Graph Representation Algorithm)
+**/
+class Graph:
+    def __init__(self):
+        self.adjacency_list = {}
+
+    def add_node(self, node):
+        if node not in self.adjacency_list:
+            self.adjacency_list[node] = []
+
+    def add_edge(self, node1, node2):
+        if node1 in self.adjacency_list and node2 in self.adjacency_list:
+            self.adjacency_list[node1].append(node2)
+            self.adjacency_list[node2].append(node1)
+
+    def dfs(self, start_node):
+        visited = set()
+        self._dfs_helper(start_node, visited)
+
+    def _dfs_helper(self, node, visited):
+        visited.add(node)
+        print(node, end=" ")
+        for neighbor in self.adjacency_list[node]:
+            if neighbor not in visited:
+                self._dfs_helper(neighbor, visited)
+
+    def bfs(self, start_node):
+        visited = set()
+        queue = [start_node]
+        visited.add(start_node)
+        while queue:
+            node = queue.pop(0)
+            print(node, end=" ")
+            for neighbor in self.adjacency_list[node]:
+                if neighbor not in visited:
+                    queue.append(neighbor)
+                    visited.add(neighbor)
+
+
+# Create a graph
+graph = Graph()
+
+# Add nodes
+graph.add_node("A")
+graph.add_node("B")
+graph.add_node("C")
+graph.add_node("D")
+graph.add_node("E")
+
+# Add edges
+graph.add_edge("A", "B")
+graph.add_edge("A", "C")
+graph.add_edge("B", "D")
+graph.add_edge("C", "E")
+
+# Perform DFS traversal
+print("DFS Traversal: ")
+graph.dfs("A")
+
+# Perform BFS traversal
+print("\nBFS Traversal: ")
+graph.bfs("A")
+
+
+
+
+
+
+
+/**
+Represent a graph of flight paths between cities, where the cost of an edge is the time or fuel used for the journey. Use adjacency list or matrix representation and check if the graph is connected. Justify the storage representation used.
+(Flight Path Graph)
+**/
+class Graph:
+    def __init__(self):
+        self.adjacency_list = {}
+
+    def add_city(self, city):
+        if city not in self.adjacency_list:
+            self.adjacency_list[city] = {}
+
+    def add_flight_path(self, city1, city2, cost):
+        if city1 in self.adjacency_list and city2 in self.adjacency_list:
+            self.adjacency_list[city1][city2] = cost
+            self.adjacency_list[city2][city1] = cost  # Assuming the graph is undirected
+
+    def is_connected(self):
+        visited = set()
+        self._dfs_helper("New York", visited)
+        return len(visited) == len(self.adjacency_list)
+
+    def _dfs_helper(self, city, visited):
+        visited.add(city)
+        for neighbor in self.adjacency_list[city]:
+            if neighbor not in visited:
+                self._dfs_helper(neighbor, visited)
+
+    def print_graph(self):
+        for city in self.adjacency_list:
+            print(f"{city}: {self.adjacency_list[city]}")
+
+
+# Create a graph of flight paths between cities
+graph = Graph()
+
+# Add cities
+graph.add_city("New York")
+graph.add_city("Los Angeles")
+graph.add_city("Chicago")
+graph.add_city("Houston")
+graph.add_city("Seattle")
+
+# Add flight paths
+graph.add_flight_path("New York", "Los Angeles", 5)
+graph.add_flight_path("New York", "Chicago", 2)
+graph.add_flight_path("Los Angeles", "Seattle", 2)
+graph.add_flight_path("Chicago", "Houston", 3)
+graph.add_flight_path("Houston", "Seattle", 4)
+
+# Print the graph
+print("Flight Path Graph:")
+graph.print_graph()
+
+# Check if the graph is connected
+print("\nIs the graph connected?", graph.is_connected())
+
+
+
+/**
+Given a sequence of sorted keys with search probabilities, build a binary search tree with the least search cost. Consider the access probability for each key.
+(Binary Search Optimization)
+**/
+class Node:
+    def __init__(self, key, probability):
+        self.key = key
+        self.probability = probability
+        self.left = None
+        self.right = None
+
+def optimal_bst(keys, probabilities):
+    n = len(keys)
+    cost = [[0 for _ in range(n)] for _ in range(n)]
+    root = [[None for _ in range(n)] for _ in range(n)]
+
+    for i in range(n):
+        cost[i][i] = probabilities[i]
+        root[i][i] = Node(keys[i], probabilities[i])
+
+    for length in range(2, n + 1):
+        for i in range(n - length + 1):
+            j = i + length - 1
+            min_cost = float('inf')
+            for r in range(i, j + 1):
+                left_cost = 0 if r == i else cost[i][r - 1]
+                right_cost = 0 if r == j else cost[r + 1][j]
+                total_cost = sum(probabilities[i:j + 1]) + left_cost + right_cost
+                if total_cost < min_cost:
+                    min_cost = total_cost
+                    root[i][j] = Node(keys[r], sum(probabilities[i:j + 1]))
+                    root[i][j].left = root[i][r - 1] if r > i else None
+                    root[i][j].right = root[r + 1][j] if r < j else None
+            cost[i][j] = min_cost
+
+    return root[0][n - 1]
+
+def print_bst(node, level=0):
+    if node is not None:
+        print_bst(node.right, level + 1)
+        print(' ' * 4 * level + '->', node.key, node.probability)
+        print_bst(node.left, level + 1)
+
+
+# Example usage
+keys = [10, 20, 30, 40, 50]
+probabilities = [0.1, 0.2, 0.3, 0.2, 0.2]
+root = optimal_bst(keys, probabilities)
+print_bst(root)
+
+
+/**
+Create a dictionary that stores keywords and their meanings. Provide facilities for adding, deleting, and updating entries, as well as displaying the data in sorted order. Use a height-balanced tree and analyze the complexity of finding a keyword.
+(Dictionary Management System)
+**/
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+// Node structure for the AVL Tree
+struct Node {
+    string keyword;
+    string meaning;
+    Node* left;
+    Node* right;
+    int height;
+
+    Node(string key, string mean) : keyword(key), meaning(mean), left(nullptr), right(nullptr), height(1) {}
+};
+
+// AVL Tree class
+class AVLTree {
+private:
+    Node* root;
+
+    // Utility function to get height of the tree
+    int height(Node* node) {
+        return (node == nullptr) ? 0 : node->height;
+    }
+
+    // Utility function to get balance factor of the node
+    int getBalance(Node* node) {
+        return (node == nullptr) ? 0 : height(node->left) - height(node->right);
+    }
+
+    // Right rotate the subtree rooted at 'y'
+    Node* rightRotate(Node* y) {
+        Node* x = y->left;
+        Node* T2 = x->right;
+
+        x->right = y;
+        y->left = T2;
+
+        y->height = max(height(y->left), height(y->right)) + 1;
+        x->height = max(height(x->left), height(x->right)) + 1;
+
+        return x;
+    }
+
+    // Left rotate the subtree rooted at 'x'
+    Node* leftRotate(Node* x) {
+        Node* y = x->right;
+        Node* T2 = y->left;
+
+        y->left = x;
+        x->right = T2;
+
+        x->height = max(height(x->left), height(x->right)) + 1;
+        y->height = max(height(y->left), height(y->right)) + 1;
+
+        return y;
+    }
+
+    // Insert a new node into the tree
+    Node* insert(Node* node, string keyword, string meaning) {
+        // Perform the normal BST insertion
+        if (node == nullptr)
+            return new Node(keyword, meaning);
+
+        if (keyword < node->keyword)
+            node->left = insert(node->left, keyword, meaning);
+        else if (keyword > node->keyword)
+            node->right = insert(node->right, keyword, meaning);
+        else
+            return node; // Duplicate keywords are not allowed
+
+        // Update height of this ancestor node
+        node->height = 1 + max(height(node->left), height(node->right));
+
+        // Get balance factor of this node to check if it's unbalanced
+        int balance = getBalance(node);
+
+        // Left-Left case
+        if (balance > 1 && keyword < node->left->keyword)
+            return rightRotate(node);
+
+        // Right-Right case
+        if (balance < -1 && keyword > node->right->keyword)
+            return leftRotate(node);
+
+        // Left-Right case
+        if (balance > 1 && keyword > node->left->keyword) {
+            node->left = leftRotate(node->left);
+            return rightRotate(node);
+        }
+
+        // Right-Left case
+        if (balance < -1 && keyword < node->right->keyword) {
+            node->right = rightRotate(node->right);
+            return leftRotate(node);
+        }
+
+        return node;
+    }
+
+    // Delete a node
+    Node* deleteNode(Node* root, string keyword) {
+        if (root == nullptr)
+            return root;
+
+        if (keyword < root->keyword)
+            root->left = deleteNode(root->left, keyword);
+        else if (keyword > root->keyword)
+            root->right = deleteNode(root->right, keyword);
+        else {
+            if (root->left == nullptr || root->right == nullptr) {
+                Node* temp = root->left ? root->left : root->right;
+                if (temp == nullptr) {
+                    temp = root;
+                    root = nullptr;
+                } else {
+                    *root = *temp;
+                }
+                delete temp;
+            } else {
+                Node* temp = minValueNode(root->right);
+                root->keyword = temp->keyword;
+                root->meaning = temp->meaning;
+                root->right = deleteNode(root->right, temp->keyword);
+            }
+        }
+
+        if (root == nullptr)
+            return root;
+
+        root->height = 1 + max(height(root->left), height(root->right));
+
+        int balance = getBalance(root);
+
+        // Balance the tree
+        if (balance > 1 && getBalance(root->left) >= 0)
+            return rightRotate(root);
+        if (balance > 1 && getBalance(root->left) < 0) {
+            root->left = leftRotate(root->left);
+            return rightRotate(root);
+        }
+        if (balance < -1 && getBalance(root->right) <= 0)
+            return leftRotate(root);
+        if (balance < -1 && getBalance(root->right) > 0) {
+            root->right = rightRotate(root->right);
+            return leftRotate(root);
+        }
+
+        return root;
+    }
+
+    // Find the node with the minimum value
+    Node* minValueNode(Node* node) {
+        Node* current = node;
+        while (current->left != nullptr)
+            current = current->left;
+        return current;
+    }
+
+    // In-order traversal to display dictionary entries
+    void inOrder(Node* root) {
+        if (root != nullptr) {
+            inOrder(root->left);
+            cout << root->keyword << ": " << root->meaning << endl;
+            inOrder(root->right);
+        }
+    }
+
+    // Search for a keyword
+    Node* search(Node* root, string keyword) {
+        if (root == nullptr || root->keyword == keyword)
+            return root;
+
+        if (keyword < root->keyword)
+            return search(root->left, keyword);
+        else
+            return search(root->right, keyword);
+    }
+
+public:
+    AVLTree() : root(nullptr) {}
+
+    // Insert a new entry
+    void insertEntry(string keyword, string meaning) {
+        root = insert(root, keyword, meaning);
+    }
+
+    // Delete an entry
+    void deleteEntry(string keyword) {
+        root = deleteNode(root, keyword);
+    }
+
+    // Search for a keyword
+    void searchKeyword(string keyword) {
+        Node* result = search(root, keyword);
+        if (result) {
+            cout << "Found: " << result->keyword << ": " << result->meaning << endl;
+        } else {
+            cout << "Keyword not found!" << endl;
+        }
+    }
+
+    // Update meaning of a keyword
+    void updateEntry(string keyword, string newMeaning) {
+        Node* result = search(root, keyword);
+        if (result) {
+            result->meaning = newMeaning;
+            cout << "Updated: " << result->keyword << ": " << result->meaning << endl;
+        } else {
+            cout << "Keyword not found!" << endl;
+        }
+    }
+
+    // Display dictionary entries in sorted order
+    void displayDictionary() {
+        cout << "Dictionary Entries (Sorted Order):" << endl;
+        inOrder(root);
+    }
+};
+int main() {
+    AVLTree dictionary;
+
+    dictionary.insertEntry("Algorithm", "A step-by-step procedure for solving a problem.");
+    dictionary.insertEntry("Binary Search", "An efficient algorithm for finding an item from a sorted list of items.");
+    dictionary.insertEntry("Data Structure", "A particular way of organizing and storing data.");
+
+    cout << "Initial Dictionary:" << endl;
+    dictionary.displayDictionary();
+
+    cout << "\nSearching for 'Algorithm':" << endl;
+    dictionary.searchKeyword("Algorithm");
+
+    cout << "\nUpdating 'Binary Search':" << endl;
+    dictionary.updateEntry("Binary Search", "A search algorithm that finds the position of a target value.");
+    
+    cout << "\nDeleting 'Data Structure':" << endl;
+    dictionary.deleteEntry("Data Structure");
+
+    cout << "\nUpdated Dictionary:" << endl;
+    dictionary.displayDictionary();
+
+    return 0;
+}
+
+
+
+
+
+/**
+Read the marks obtained by students in an online examination and find the maximum and minimum marks using a heap data structure. Analyze the algorithm.
+(Marks Sorting Algorithm)
+**/
+
+#include <iostream>
+#include <queue>
+#include <vector>
+
+using namespace std;
+
+// Function to find the maximum and minimum marks
+void find_max_min_marks(vector<int>& marks) {
+    // Create a max heap to find the maximum marks
+    priority_queue<int> max_heap;
+    for (int mark : marks) {
+        max_heap.push(mark);
+    }
+    int max_marks = max_heap.top();
+    cout << "Maximum marks: " << max_marks << endl;
+
+    // Create a min heap to find the minimum marks
+    priority_queue<int, vector<int>, greater<int>> min_heap;
+    for (int mark : marks) {
+        min_heap.push(mark);
+    }
+    int min_marks = min_heap.top();
+    cout << "Minimum marks: " << min_marks << endl;
+}
+
+int main() {
+    int n;
+    cout << "Enter the number of students: ";
+    cin >> n;
+
+    vector<int> marks(n);
+    cout << "Enter the marks obtained by each student: ";
+    for (int i = 0; i < n; i++) {
+        cin >> marks[i];
+    }
+
+    find_max_min_marks(marks);
+
+    return 0;
+}
+
+
+
+
+/**
+Maintain a student information system using a sequential file, allowing users to add, delete, and display information. Handle cases where a student's record does not exist.
+(Student Information System)
+**/
+
+
+
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+
+using namespace std;
+
+// Structure to store student data
+struct Student {
+    int id;
+    string name;
+    int age;
+};
+
+// Function to display all student records from the file
+void displayStudents(const string& filename) {
+    ifstream file(filename, ios::binary);
+    if (!file) {
+        cout << "Error opening file." << endl;
+        return;
+    }
+
+    Student student;
+    bool found = false;
+    while (file.read(reinterpret_cast<char*>(&student), sizeof(student))) {
+        cout << "ID: " << student.id << ", Name: " << student.name << ", Age: " << student.age << endl;
+        found = true;
+    }
+
+    if (!found) {
+        cout << "No student records found!" << endl;
+    }
+
+    file.close();
+}
+
+// Function to add a new student record to the file
+void addStudent(const string& filename) {
+    ofstream file(filename, ios::app | ios::binary);
+    if (!file) {
+        cout << "Error opening file." << endl;
+        return;
+    }
+
+    Student student;
+    cout << "Enter student ID: ";
+    cin >> student.id;
+    cin.ignore();  // Ignore the newline character left in the input buffer
+    cout << "Enter student name: ";
+    getline(cin, student.name);
+    cout << "Enter student age: ";
+    cin >> student.age;
+
+    file.write(reinterpret_cast<const char*>(&student), sizeof(student));
+    cout << "Student record added successfully!" << endl;
+
+    file.close();
+}
+
+// Function to delete a student record from the file
+void deleteStudent(const string& filename) {
+    int idToDelete;
+    cout << "Enter student ID to delete: ";
+    cin >> idToDelete;
+
+    ifstream inFile(filename, ios::binary);
+    ofstream outFile("temp.dat", ios::binary);
+    
+    if (!inFile || !outFile) {
+        cout << "Error opening file." << endl;
+        return;
+    }
+
+    Student student;
+    bool found = false;
+    while (inFile.read(reinterpret_cast<char*>(&student), sizeof(student))) {
+        if (student.id != idToDelete) {
+            outFile.write(reinterpret_cast<const char*>(&student), sizeof(student));
+        } else {
+            found = true;
+        }
+    }
+
+    inFile.close();
+    outFile.close();
+
+    // If the student was found, replace the original file with the updated file
+    if (found) {
+        remove(filename.c_str());
+        rename("temp.dat", filename.c_str());
+        cout << "Student record deleted successfully!" << endl;
+    } else {
+        cout << "Student ID not found!" << endl;
+        remove("temp.dat");  // Remove the temporary file if ID not found
+    }
+}
+
+int main() {
+    string filename = "students.dat";
+    int choice;
+
+    while (true) {
+        cout << "\nStudent Information System" << endl;
+        cout << "1. Add Student" << endl;
+        cout << "2. Delete Student" << endl;
+        cout << "3. Display Students" << endl;
+        cout << "4. Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                addStudent(filename);
+                break;
+            case 2:
+                deleteStudent(filename);
+                break;
+            case 3:
+                displayStudents(filename);
+                break;
+            case 4:
+                cout << "Exiting..." << endl;
+                return 0;
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+        }
+    }
+
+    return 0;
+}
+
+/**
+Maintain an employee information system using an index sequential file, allowing users to add, delete, and display information. Handle cases where an employee's record does not exist.
+(Employee Data Management)
+**/
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <algorithm>
+
+using namespace std;
+
+// Structure to store employee data
+struct Employee {
+    int id;
+    string name;
+    int age;
+    double salary;
+};
+
+// Structure to store the index (Employee ID and the position in the data file)
+struct Index {
+    int id;
+    streampos position; // Position of the record in the data file
+};
+
+// Function to display all employee records
+void displayEmployees(const string& dataFilename, const string& indexFilename) {
+    ifstream indexFile(indexFilename, ios::binary);
+    ifstream dataFile(dataFilename, ios::binary);
+    
+    if (!indexFile || !dataFile) {
+        cout << "Error opening file." << endl;
+        return;
+    }
+
+    Index index;
+    Employee emp;
+    bool found = false;
+    
+    while (indexFile.read(reinterpret_cast<char*>(&index), sizeof(index))) {
+        dataFile.seekg(index.position, ios::beg);
+        dataFile.read(reinterpret_cast<char*>(&emp), sizeof(emp));
+        cout << "ID: " << emp.id << ", Name: " << emp.name << ", Age: " << emp.age << ", Salary: " << emp.salary << endl;
+        found = true;
+    }
+
+    if (!found) {
+        cout << "No employee records found!" << endl;
+    }
+
+    indexFile.close();
+    dataFile.close();
+}
+
+// Function to add a new employee record
+void addEmployee(const string& dataFilename, const string& indexFilename) {
+    ofstream dataFile(dataFilename, ios::app | ios::binary);
+    ofstream indexFile(indexFilename, ios::app | ios::binary);
+    
+    if (!dataFile || !indexFile) {
+        cout << "Error opening file." << endl;
+        return;
+    }
+
+    Employee emp;
+    cout << "Enter employee ID: ";
+    cin >> emp.id;
+    cin.ignore();  // Ignore newline character
+    cout << "Enter employee name: ";
+    getline(cin, emp.name);
+    cout << "Enter employee age: ";
+    cin >> emp.age;
+    cout << "Enter employee salary: ";
+    cin >> emp.salary;
+
+    // Write the new employee data to the data file
+    dataFile.write(reinterpret_cast<const char*>(&emp), sizeof(emp));
+
+    // Get the position of the newly added employee record in the data file
+    streampos position = dataFile.tellp();
+
+    // Write the index entry to the index file
+    Index newIndex;
+    newIndex.id = emp.id;
+    newIndex.position = position;
+    indexFile.write(reinterpret_cast<const char*>(&newIndex), sizeof(newIndex));
+
+    cout << "Employee added successfully!" << endl;
+
+    dataFile.close();
+    indexFile.close();
+}
+
+// Function to delete an employee record by ID
+void deleteEmployee(const string& dataFilename, const string& indexFilename) {
+    int idToDelete;
+    cout << "Enter employee ID to delete: ";
+    cin >> idToDelete;
+
+    ifstream indexFile(indexFilename, ios::binary);
+    ifstream dataFile(dataFilename, ios::binary);
+    ofstream tempIndexFile("temp_index.dat", ios::binary);
+    ofstream tempDataFile("temp_data.dat", ios::binary);
+
+    if (!indexFile || !dataFile || !tempIndexFile || !tempDataFile) {
+        cout << "Error opening file." << endl;
+        return;
+    }
+
+    Index index;
+    Employee emp;
+    bool found = false;
+
+    while (indexFile.read(reinterpret_cast<char*>(&index), sizeof(index))) {
+        // If the employee ID does not match, copy to the temp files
+        if (index.id != idToDelete) {
+            // Copy the record from data file to the temporary data file
+            dataFile.seekg(index.position, ios::beg);
+            dataFile.read(reinterpret_cast<char*>(&emp), sizeof(emp));
+            tempDataFile.write(reinterpret_cast<const char*>(&emp), sizeof(emp));
+            
+            // Copy the index entry to the temporary index file
+            tempIndexFile.write(reinterpret_cast<const char*>(&index), sizeof(index));
+        } else {
+            found = true;
+        }
+    }
+
+    indexFile.close();
+    dataFile.close();
+    tempIndexFile.close();
+    tempDataFile.close();
+
+    if (found) {
+        // Remove the old files and rename the temp files
+        remove(dataFilename.c_str());
+        remove(indexFilename.c_str());
+        rename("temp_data.dat", dataFilename.c_str());
+        rename("temp_index.dat", indexFilename.c_str());
+
+        cout << "Employee record deleted successfully!" << endl;
+    } else {
+        cout << "Employee ID not found!" << endl;
+        remove("temp_data.dat");
+        remove("temp_index.dat");
+    }
+}
+
+// Function to search for an employee by ID
+void searchEmployee(const string& dataFilename, const string& indexFilename) {
+    int idToSearch;
+    cout << "Enter employee ID to search: ";
+    cin >> idToSearch;
+
+    ifstream indexFile(indexFilename, ios::binary);
+    ifstream dataFile(dataFilename, ios::binary);
+    
+    if (!indexFile || !dataFile) {
+        cout << "Error opening file." << endl;
+        return;
+    }
+
+    Index index;
+    Employee emp;
+    bool found = false;
+
+    while (indexFile.read(reinterpret_cast<char*>(&index), sizeof(index))) {
+        if (index.id == idToSearch) {
+            dataFile.seekg(index.position, ios::beg);
+            dataFile.read(reinterpret_cast<char*>(&emp), sizeof(emp));
+            cout << "Employee found: ID: " << emp.id << ", Name: " << emp.name << ", Age: " << emp.age << ", Salary: " << emp.salary << endl;
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        cout << "Employee ID not found!" << endl;
+    }
+
+    indexFile.close();
+    dataFile.close();
+}
+
+int main() {
+    string dataFilename = "employee_data.dat";
+    string indexFilename = "employee_index.dat";
+
+    int choice;
+
+    while (true) {
+        cout << "\nEmployee Information System" << endl;
+        cout << "1. Add Employee" << endl;
+        cout << "2. Delete Employee" << endl;
+        cout << "3. Display Employees" << endl;
+        cout << "4. Search Employee" << endl;
+        cout << "5. Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                addEmployee(dataFilename, indexFilename);
+                break;
+            case 2:
+                deleteEmployee(dataFilename, indexFilename);
+                break;
+            case 3:
+                displayEmployees(dataFilename, indexFilename);
+                break;
+            case 4:
+                searchEmployee(dataFilename, indexFilename);
+                break;
+            case 5:
+                cout << "Exiting..." << endl;
+                return 0;
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+        }
+    }
+
+    return 0;
+}
+
