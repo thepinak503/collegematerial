@@ -12,6 +12,8 @@ This repository contains important instructions for accessing a collection of pr
 
 ## Instructions
 
+# First of all make sure there is internet connection in your system (Ethernet or Wi-Fi to be connected) then only follow the instructions ahead otherwise nothing will work.
+
 Follow the steps below according to your operating system.
 
 ### For Windows
