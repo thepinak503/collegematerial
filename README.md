@@ -8,8 +8,6 @@ This repository contains important instructions for accessing a collection of pr
 - **Data Structures and Algorithms Lab (DSAL)**
 - **Data Structures Lab (DSL)**
 
-> **Note:** The collection includes approximately 6,000 to 7,000 lines of code for OOP, CG, DSA, and DSL. Message Passing (MP) codes are **not included**.
-
 ## Instructions
 
 # Important!!!: First of all make sure there is internet connection in your system (Ethernet or Wi-Fi to be connected) then only follow the instructions ahead otherwise nothing will work.
